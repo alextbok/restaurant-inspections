@@ -10,7 +10,8 @@ from datetime import datetime as dt
 
 DB_NAME = "inspections.db"
 
-inspections_schema = ("CREATE TABLE inspections ("
+inspections_schema = ("DROP TABLE IF EXISTS inspections;"
+		"CREATE TABLE inspections ("
 			"id INTEGER PRIMARY KEY AUTOINCREMENT,"
 			"name VARCHAR(255),"
 			"borough SMALLINT,"
@@ -26,26 +27,23 @@ inspections_schema = ("CREATE TABLE inspections ("
 			"lng DECIMAL(9,6)"
 		");")
 
-violations_schema = ("CREATE TABLE violations ("
+violations_schema = ("DROP TABLE IF EXISTS violations;"
+		"CREATE TABLE violations ("
 			"id INTEGER PRIMARY KEY AUTOINCREMENT,"
-			"violation_code VARCHAR(5),"
+			"code VARCHAR(5),"
 			"description VARCHAR(1024)"
 		");")
 
-def instantiate_db():
+def new_db():
 	'''
 	Creates the datase with schema defined above
 	Deletes existing database if it exists
 	This is ok since our application is read only
 	'''
 	with sql.connect(DB_NAME) as con:
-		con.cursor().execute("DROP TABLE IF EXISTS inspections;")
+		con.cursor().executescript(inspections_schema)
 		con.commit()
-		con.cursor().execute(inspections_schema)
-		con.commit()
-		con.cursor().execute("DROP TABLE IF EXISTS violations;")
-		con.commit()
-		con.cursor().execute(violations_schema)
+		con.cursor().executescript(violations_schema)
 		con.commit()
 
 def load_violation_codes(path):
@@ -55,11 +53,11 @@ def load_violation_codes(path):
 	with open(path, 'rb') as f:
 		reader = csv.reader(f)
 		reader.next() # skip header
-		rows = most_recent_violation_codes([{ "violation_code" : unicode(r[3], "utf-8"), 
+		rows = most_recent_violation_codes([{ "code" : unicode(r[3], "utf-8"), 
 					"description" : unicode(r[4], "utf-8"),
 					"start_date" : unicode(r[0], "utf-8")} for r in reader])
-		to_db = [(e["violation_code"], e["description"]) for e in rows]
-		query = "INSERT INTO violations (violation_code, description) VALUES (?,?);"
+		to_db = [(e["code"], e["description"]) for e in rows]
+		query = "INSERT INTO violations (code, description) VALUES (?,?);"
 		con = sql.connect(DB_NAME)
 		con.executemany(query, to_db)
 		con.commit()
@@ -72,10 +70,10 @@ def most_recent_violation_codes(rows):
 	d = {}
 	for r in rows:
 		try:
-			if is_more_recent(r["start_date"], d[r["violation_code"]]["start_date"]):
-				d[r["violation_code"]] = r
+			if is_more_recent(r["start_date"], d[r["code"]]["start_date"]):
+				d[r["code"]] = r
 		except KeyError:
-			d[r["violation_code"]] = r
+			d[r["code"]] = r
 	return [val for val in d.values()]
 
 def is_more_recent(t1, t2):
@@ -136,7 +134,7 @@ def load_inspections(path):
 
 
 if __name__=="__main__":
-	instantiate_db()
+	new_db()
 	load_inspections("../../data/final_latlng.csv")
 	load_violation_codes("../../data/violation_codes.csv")
 

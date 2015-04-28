@@ -103,11 +103,7 @@ def write_all():
 		for r in reader:
 				r.append(addresses[r[3] + " " + r[4] + "," + r[5]][0])
 				r.append(addresses[r[3] + " " + r[4] + "," + r[5]][1])
-				#print addresses[r[3] + " " + r[4] + "," + r[5]][0]
-				#writer.writerow([elt.encode("utf-8") for elt in r])
 				writer.writerow(r)
-				#print ",".join(r) + "," + addresses[r[3] + " " + r[4] + "," + r[5]]
-
 
 if __name__=="__main__":
 	#write_to_file()
