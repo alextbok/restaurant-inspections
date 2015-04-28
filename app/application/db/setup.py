@@ -6,9 +6,8 @@ These should be called once upon instantiating our application
 '''
 import sqlite3 as sql
 import csv
+import config
 from datetime import datetime as dt
-
-DB_NAME = "inspections.db"
 
 inspections_schema = ("DROP TABLE IF EXISTS inspections;"
 		"CREATE TABLE inspections ("
@@ -40,7 +39,7 @@ def new_db():
 	Deletes existing database if it exists
 	This is ok since our application is read only
 	'''
-	with sql.connect(DB_NAME) as con:
+	with sql.connect(config.DB_PATH) as con:
 		con.cursor().executescript(inspections_schema)
 		con.commit()
 		con.cursor().executescript(violations_schema)
@@ -58,7 +57,7 @@ def load_violation_codes(path):
 					"start_date" : unicode(r[0], "utf-8")} for r in reader])
 		to_db = [(e["code"], e["description"]) for e in rows]
 		query = "INSERT INTO violations (code, description) VALUES (?,?);"
-		con = sql.connect(DB_NAME)
+		con = sql.connect(config.DB_PATH)
 		con.executemany(query, to_db)
 		con.commit()
 
@@ -128,15 +127,15 @@ def load_inspections(path):
 			"current_grade,"
 			"lat,"
 			"lng) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);")
-		con = sql.connect(DB_NAME)
+		con = sql.connect(config.DB_PATH)
 		con.executemany(query, to_db)
 		con.commit()
 
 
 if __name__=="__main__":
 	new_db()
-	load_inspections("../../data/final_latlng.csv")
-	load_violation_codes("../../data/violation_codes.csv")
+	load_inspections(DB_DIR + "/final_latlng.csv")
+	load_violation_codes(DB_DIR + "/violation_codes.csv")
 
 
 

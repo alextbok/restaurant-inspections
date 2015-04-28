@@ -1,20 +1,21 @@
 import sqlite3 as sql
+import config
 
-DB_NAME = "inspections.db"
 valid_params = set(['name', 'borough', 'cuisine_type', 'violation_code'])
 
-def select(**kwargs):
+def select(kwargs):
 	'''
 	Executes a select query on inspections table
 	'''
 
 	clause = ' AND '.join(['%s = :%s' % (k, k) for k in kwargs.keys() if k in valid_params])
-	with sql.connect(DB_NAME) as con:
+	with sql.connect(config.DB_PATH) as con:
 		cursor = con.cursor()
 		query = ('SELECT * FROM inspections AS i, ' 
 			'violations AS v '
-			'WHERE %s '
-			'AND i.violation_code = v.code LIMIT 10;' % (clause))
+			'WHERE i.violation_code = v.code ')
+		if len(clause) > 0:
+			query += "AND %s" % (clause)
 		columns = ', '.join(kwargs.keys())
 		cursor.execute(query, kwargs)
 		ret = []
@@ -32,8 +33,3 @@ def select(**kwargs):
 					'lat' : lat, 
 					'lng' : lng, 
 					'description' : description }
-
-if __name__=="__main__":
-	s = select(violation_code="10A")
-	for elt in s:
-		print elt
