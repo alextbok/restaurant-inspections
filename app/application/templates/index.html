@@ -7,7 +7,6 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
-		<!--  <script src="http://d3js.org/d3.v3.min.js"></script> -->
 		<!-- GOOGLE MAPS API CODE -->
 
 			<script type="text/javascript"
@@ -35,21 +34,69 @@
 			<div class="row">
 				<div class="col-md-6">
 					<div id="map-canvas"></div>
+					<form class="navbar-form navbar-left" id="query-form" action="/" method="get">
+						<input id="violation-input" name="violation" type="hidden">
+						<input id="cuisine-type-input" name="cuisine_type" type="hidden">
+						<input id="borough-input" name="borough" type="hidden">
+
+						<div class="btn-group">
+							<div class="row">
+								<button class="btn btn-default dropdown-toggle" type="button" id="dd-violation" data-toggle="dropdown" aria-expanded="true">
+								<strong>All Violations</strong>
+								<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu scrollable-menu" role="menu">
+									<li>
+										<a onclick="$('#violation-input').val('');"><strong>All Violations</strong></a>
+									</li>
+								{% for v in violations %}
+									<li title="{{v[3]}}">
+										<a onclick="$('#violation-input').val('{{v[0]}}');"><strong>{{v[2]}}</strong> (count: {{v[1]}})</a>
+									</li>
+								{% endfor %}
+								</ul>
+							</div>
+						</div>
+						<div class="row">
+							<div class="btn-group">
+								<button class="btn btn-default dropdown-toggle" type="button" id="dd-cuisine-type" data-toggle="dropdown" aria-expanded="true">
+								<strong>All Cuisine Types</strong>
+								<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu scrollable-menu" role="menu">
+									<li>
+										<a onclick="$('#cuisine-type-input').val('');"><strong>All Cuisine Types</strong></a>
+									</li>
+								{% for c in cuisine_types %}
+									<li>
+										<a onclick="$('#cuisine-type-input').val('{{c}}');"><strong>{{c}}</strong></a>
+									</li>
+								{% endfor %}
+								</ul>
+							</div>
+							<div class="btn-group">
+								<button class="btn btn-default dropdown-toggle" type="button" id="dd-borough" data-toggle="dropdown" aria-expanded="true">
+								<strong>All Boroughs</strong>
+								<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu scrollable-menu" role="menu">
+									<li><a onclick="$('#borough-input').val(-1);"><strong>All Boroughs</strong></a></li>
+									<li><a onclick="$('#borough-input').val(1);"><strong>Manhattan</strong></a></li>
+									<li><a onclick="$('#borough-input').val(2);"><strong>Bronx</strong></a></li>
+									<li><a onclick="$('#borough-input').val(3);"><strong>Brooklyn</strong></a></li>
+									<li><a onclick="$('#borough-input').val(4);"><strong>Queens</strong></a></li>
+									<li><a onclick="$('#borough-input').val(5);"><strong>Staten Island</strong></a></li>
+								</ul>
+							</div>
+							<button type="submit" class="btn btn-default"><strong>Update Results</strong></button>
+						</div>
 				</div>
 				<div class="col-md-6">
-					<form class="navbar-form navbar-left" role="search">
-					<div class="dropdown">
-							<button class="btn btn-default dropdown-toggle" type="button" id="dd_violation" data-toggle="dropdown" aria-expanded="true">
-							All
-							<span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
-								<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
-							</ul>
-						</div>
+					<ul>
+					{% for r in results %}
+						<li>{{r['lat']}}, {{r['lng']}}</li>
+					{% endfor %}
+					</ul>
 				</div>
 			</div>
 		</div>

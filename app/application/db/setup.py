@@ -45,6 +45,15 @@ def new_db():
 		con.cursor().executescript(violations_schema)
 		con.commit()
 
+def clean_boroughs():
+	'''
+	Both 0 and 1 indicate manhattan, so set all borough{0,1} = 1
+	'''
+	with sql.connect(config.DB_PATH) as con:
+		query = "UPDATE inspections SET borough = ( CASE WHEN (borough=0) THEN 1 ELSE (borough) END );"
+		con.cursor().executescript(query)
+		con.commit()
+
 def load_violation_codes(path):
 	'''
 	Loads the relevant information from violation_codes.csv into database
