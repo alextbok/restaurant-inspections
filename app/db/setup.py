@@ -21,7 +21,9 @@ inspections_schema = ("CREATE TABLE inspections ("
 			"action CHARACTER(1),"
 			"violation_code VARCHAR(5),"
 			"score INTEGER,"
-			"current_grade CHARACTER(1)"
+			"current_grade CHARACTER(1),"
+			"lat DECIMAL(9,6),"
+			"lng DECIMAL(9,6)"
 		");")
 
 violations_schema = ("CREATE TABLE violations ("
@@ -88,19 +90,22 @@ def load_inspections(path):
 	Takes the inspections.csv file and loads 
 	the relevant information into database
 	'''
-	with open(path, 'rb') as f:
+	with open(path, 'rbU') as f:
 		reader = csv.reader(f)
 		reader.next() # skip header
+		
 		rows = [{"name" : unicode(r[1], "utf-8"),
-					"borough" : unicode(r[2], "utf-8"),
-					"address" : (unicode(r[3], "utf-8") + " " + unicode(r[4], "utf-8")),
-					"zip" : unicode(r[5], "utf-8"),
-					"cuisine_type" : unicode(r[7], "utf-8"),
-					"inspection_date" : unicode(r[9], "utf-8"),
-					"action" : unicode(r[10], "utf-8"),
-					"violation_code" : unicode(r[11], "utf-8"),
-					"score" : unicode(r[12], "utf-8"),
-					"current_grade" : unicode(r[13], "utf-8")} for r in reader]
+				"borough" : unicode(r[2], "utf-8"),
+				"address" : (unicode(r[3], "utf-8") + " " + unicode(r[4], "utf-8")),
+				"zip" : unicode(r[5], "utf-8"),
+				"cuisine_type" : unicode(r[7], "utf-8"),
+				"inspection_date" : unicode(r[9], "utf-8"),
+				"action" : unicode(r[10], "utf-8"),
+				"violation_code" : unicode(r[11], "utf-8"),
+				"score" : unicode(r[12], "utf-8"),
+				"current_grade" : unicode(r[13], "utf-8"),
+				"lat" : unicode(r[17], "utf-8"),
+				"lng" : unicode(r[18], "utf-8")} for r in reader]
 		to_db = [(e["name"], 
 				e["borough"],
 				e["address"],
@@ -110,7 +115,9 @@ def load_inspections(path):
 				e["action"],
 				e["violation_code"],
 				e["score"],
-				e["current_grade"]) for e in rows]
+				e["current_grade"],
+				e["lat"],
+				e["lng"]) for e in rows]
 		query = ("INSERT INTO inspections (name,"
 			"borough,"
 			"address,"
@@ -120,7 +127,9 @@ def load_inspections(path):
 			"action,"
 			"violation_code,"
 			"score,"
-			"current_grade) VALUES (?,?,?,?,?,?,?,?,?,?);")
+			"current_grade,"
+			"lat,"
+			"lng) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);")
 		con = sql.connect(DB_NAME)
 		con.executemany(query, to_db)
 		con.commit()
@@ -128,7 +137,7 @@ def load_inspections(path):
 
 if __name__=="__main__":
 	instantiate_db()
-	load_inspections("../../data/inspections.csv")
+	load_inspections("../../data/final_latlng.csv")
 	load_violation_codes("../../data/violation_codes.csv")
 
 

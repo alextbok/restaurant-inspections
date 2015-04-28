@@ -16,7 +16,7 @@ def get_curr_addresses():
 	the service to geocode them again
 	'''
 	a = {}
-	with open('./latlng.txt', 'rb') as f:
+	with open('./latlng.csv', 'rb') as f:
 		reader = csv.reader(f)
 		for r in reader:
 			a[r[0] + "," + r[1]] = 1
@@ -65,7 +65,7 @@ def split():
 	'''
 	finished = []
 	null = []
-	with open('./latlng.txt', 'rb') as f:
+	with open('./latlng.csv', 'rb') as f:
 		reader = csv.reader(f)
 		for r in reader:
 			if r[2] == "NULL":
@@ -81,10 +81,38 @@ def split():
 			i += 1
 		writer.writerow([null[i][0], null[i][1], "New York", "NY"])
 
+def write_all():
+	'''
+	Combines results of all geocoding requests
+	'''
+	addresses = {}
+	with open('./latlng.csv', 'rb') as f:
+		reader = csv.reader(f)
+		for r in reader:
+			addresses[r[0] + "," + r[1]] = (r[2], r[3])
+	for i in range(19):
+		f = open('./finished/latlng' + str(i) + '.csv', 'rb')
+		reader = csv.reader(f)
+		reader.next() # skip header
+		for r in reader:
+			addresses[r[4] + "," + r[5]] = (r[0], r[1])
+	with open('../data/inspections.csv', 'rb') as f:
+		reader = csv.reader(f)
+		writer = csv.writer(open('../data/final_latlng.csv','w'))
+		reader.next() # skip header
+		for r in reader:
+				r.append(addresses[r[3] + " " + r[4] + "," + r[5]][0])
+				r.append(addresses[r[3] + " " + r[4] + "," + r[5]][1])
+				#print addresses[r[3] + " " + r[4] + "," + r[5]][0]
+				#writer.writerow([elt.encode("utf-8") for elt in r])
+				writer.writerow(r)
+				#print ",".join(r) + "," + addresses[r[3] + " " + r[4] + "," + r[5]]
+
+
 if __name__=="__main__":
 	#write_to_file()
 	#split()
-
+	write_all()
 
 
 
