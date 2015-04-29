@@ -33,6 +33,16 @@ violations_schema = ("DROP TABLE IF EXISTS violations;"
 			"description VARCHAR(1024)"
 		");")
 
+def do_setup():
+	'''
+	Wrapper function to be called in __init__.py
+	'''
+	new_db()
+	load_inspections(config.DB_DIR + "/final_latlng.csv")
+	load_violation_codes(config.DB_DIR + "/violation_codes.csv")
+	clean_boroughs()
+	create_indices()
+
 def new_db():
 	'''
 	Creates the datase with schema defined above
@@ -70,14 +80,19 @@ def load_violation_codes(path):
 		con.executemany(query, to_db)
 		con.commit()
 
-def optimize_inspections():
+def create_indices():
 	'''
-	Creates an index on the name column of inspections table
+	Creates indices on the commonly queried columns
 	'''
 	with sql.connect(config.DB_PATH) as con:
-				query = "CREATE INDEX name_index on inspections (name);"
-				con.cursor().execute(query)
-				con.commit()
+			query = ("CREATE INDEX name_index on inspections (name);"
+					"CREATE INDEX violation_code_index on inspections (violation_code);"
+					"CREATE INDEX code_index on violations (code);"
+					"CREATE INDEX borough_index on inspections (borough);"
+					"CREATE INDEX cuisine_type on inspections (cuisine_type);"
+					)
+			con.cursor().executescript(query)
+			con.commit()
 
 def most_recent_violation_codes(rows):
 	'''

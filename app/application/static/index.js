@@ -40,6 +40,6 @@ $(window).load(function() {
 
 	$('.restaurant-names-typeahead').on('typeahead:selected', function(evt, item) {
 		$('#restaurant-name-input').val(item);
-	})
+	});
 
 });
