@@ -22,3 +22,12 @@ def get_client_names():
 	'''
 	with open(config.DB_DIR + "/client_restaurant_names.csv", 'rb') as f:
 			return [r[0].decode('utf-8') for r in csv.reader(f)]
+
+def is_args_empty(args):
+	'''
+	Returns true if the client has not passed any args in GET request
+	'''
+	for a in args:
+		if args[a] != '':
+			return False
+	return True

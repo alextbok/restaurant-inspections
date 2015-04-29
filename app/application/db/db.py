@@ -6,17 +6,24 @@ valid_params = set(['name', 'borough', 'cuisine_type', 'violation_code'])
 def select(kwargs):
 	'''
 	Executes a select query on inspections table
-	'''
-
-	clause = ' AND '.join(['%s = :%s' % (k, k) for k in kwargs.keys() if k in valid_params])
+	'''	
 	with sql.connect(config.DB_PATH) as con:
-		cursor = con.cursor()
+
+		print "kwargs:"
+		print "\t" + str(kwargs)
+
+		# build the query with the user-supplied arguments
+		clause = ' AND '.join(['%s = :%s' % (k, k) for k in kwargs.keys() if k in valid_params and kwargs[k] != ''])
 		query = ('SELECT * FROM inspections AS i, ' 
 			'violations AS v '
 			'WHERE i.violation_code = v.code ')
 		if len(clause) > 0:
 			query += "AND %s" % (clause)
-		columns = ', '.join(kwargs.keys())
+		query += ";"
+		print query
+
+		# execute the query and return results
+		cursor = con.cursor()
 		cursor.execute(query, kwargs)
 		ret = []
 		for row in cursor.fetchall():

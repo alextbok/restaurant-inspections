@@ -5,10 +5,7 @@ $(window).load(function() {
 	}
 
 	$(".dropdown-menu li a").click(function(e){
-		console.log($(this).siblings(''));
-		console.log($(this).find('.dropdown-toggle'));
 		$(this).parents('.btn-group').find('.dropdown-toggle').html('<strong>' + 
-		//$(this).parents('.dd-span').find('.dropdown-toggle').html('<strong>' + 
 			truncate($(this).text(), 60)
 			+ '</strong> <span class="caret"></span>'
 		);
@@ -16,14 +13,9 @@ $(window).load(function() {
 
 	var substringMatcher = function(strs) {
 		return function findMatches(q, cb) {
-			console.log(q);
-			var matches, substringRegex;
-	 
-			// an array that will be populated with substring matches
-			matches = [];
-	 
-			// regex used to determine if a string contains the substring `q`
-			substrRegex = new RegExp(q, 'i');
+
+			var matches = [];
+			var substrRegex = new RegExp(q, 'i');
 	 
 			// iterate through the pool of strings and for any string that
 			// contains the substring `q`, add it to the `matches` array

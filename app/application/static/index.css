@@ -20,8 +20,7 @@ html, body {
 }
 
 #dd-violation {
-	width: 200px;
-	/* width: 500px; */
+	width: 500px;
 }
 
 #dd-cuisine-type {
@@ -30,4 +29,9 @@ html, body {
 
 #dd-borough {
 	width: 140px;
+}
+
+.restaurant-names-typeahead {
+	top: 1px;
+	right: 2px;
 }
