@@ -11,6 +11,7 @@ if not os.path.isfile(config.DB_PATH):
 	setup.load_inspections(config.DB_DIR + "/final_latlng.csv")
 	setup.load_violation_codes(config.DB_DIR + "/violation_codes.csv")
 	setup.clean_boroughs()
+	setup.optimize_inspections()
 
 app.config.from_object('config')
 

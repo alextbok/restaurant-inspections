@@ -1,5 +1,8 @@
-html, body { height: 100%; margin: 0; padding: 0;}
-
+html, body { 
+	height: 100%; 
+	margin: 10px; 
+	background: url('background.png');
+}
 
 #map-canvas {
 	height: 65%;
@@ -17,13 +20,14 @@ html, body { height: 100%; margin: 0; padding: 0;}
 }
 
 #dd-violation {
-	width: 500px;
+	width: 200px;
+	/* width: 500px; */
 }
 
 #dd-cuisine-type {
-	width: 220px;
+	width: 140px;
 }
 
 #dd-borough {
-	width: 220px;
+	width: 140px;
 }

@@ -51,7 +51,7 @@ def clean_boroughs():
 	'''
 	with sql.connect(config.DB_PATH) as con:
 		query = "UPDATE inspections SET borough = ( CASE WHEN (borough=0) THEN 1 ELSE (borough) END );"
-		con.cursor().executescript(query)
+		con.cursor().execute(query)
 		con.commit()
 
 def load_violation_codes(path):
@@ -69,6 +69,15 @@ def load_violation_codes(path):
 		con = sql.connect(config.DB_PATH)
 		con.executemany(query, to_db)
 		con.commit()
+
+def optimize_inspections():
+	'''
+	Creates an index on the name column of inspections table
+	'''
+	with sql.connect(config.DB_PATH) as con:
+				query = "CREATE INDEX name_index on inspections (name);"
+				con.cursor().execute(query)
+				con.commit()
 
 def most_recent_violation_codes(rows):
 	'''
