@@ -9,6 +9,16 @@ html, body {
 	width: 100%;
 }
 
+#scrollable-table-div {
+	height: 65% !important;
+	overflow: scroll;
+}
+
+.scrollable-panel ul {
+	white-space: nowrap;
+	overflow: scroll;
+}
+
 .scrollable-menu {
     height: auto;
     max-height: 130px;
@@ -34,4 +44,8 @@ html, body {
 .restaurant-names-typeahead {
 	top: 1px;
 	right: 2px;
+}
+
+.violation-list {
+	list-style: none;
 }

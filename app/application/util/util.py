@@ -31,3 +31,29 @@ def is_args_empty(args):
 		if args[a] != '':
 			return False
 	return True
+
+def process_query_results(results):
+	'''
+	Creates dictionary on query results to pass to client
+	'''
+	d = {}
+	for r in results:
+		generic = { "lat" : r["lat"],
+				"lng" : r["lng"],
+				"borough" : r["borough"],
+				"cuisine_type" : r["cuisine_type"],
+				"address" : r["address"].title() + ", " + r["zip"],
+				"name" : r["name"].title() }
+
+		specific = { "description" : r["description"], 
+				"date" : r["inspection_date"] }
+		try:
+			d[r["name"]]["specific"].append(specific)
+		except KeyError:
+			d[r["name"]] = { "generic" : generic, "specific": [specific] }
+	return d.values()
+
+
+
+
+

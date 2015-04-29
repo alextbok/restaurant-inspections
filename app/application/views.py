@@ -10,7 +10,8 @@ from application.util import util
 violations = util.get_client_violations()
 restaurant_names = util.get_client_names()
 cuisine_types = util.get_cuisine_types()
-default_results = [x for _, x in zip(range(100), db.select({"violation_code" : "06I"}))]
+#default_results = [x for _, x in zip(range(100), db.select({"violation_code" : "06I"}))]
+default_results = util.process_query_results(db.select({"violation_code" : "06I"}))[:50]
 
 @app.route('/', methods=['GET'])
 def index():
@@ -30,4 +31,5 @@ def index():
 		violations=violations,
 		restaurant_names=restaurant_names,
 		cuisine_types=cuisine_types,
-		results=default_results if util.is_args_empty(request.args) else [x for _, x in zip(range(100), db.select(request.args))])
+		#results=default_results if util.is_args_empty(request.args) else [x for _, x in zip(range(100), db.select(request.args))])
+		results=default_results if util.is_args_empty(request.args) else util.process_query_results(db.select(request.args))[:50])

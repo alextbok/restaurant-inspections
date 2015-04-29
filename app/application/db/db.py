@@ -1,7 +1,7 @@
 import sqlite3 as sql
 import config
 
-valid_params = set(['name', 'borough', 'cuisine_type', 'violation_code'])
+valid_params = set(['borough', 'cuisine_type', 'violation_code'])
 
 def select(kwargs):
 	'''
@@ -18,8 +18,10 @@ def select(kwargs):
 			'violations AS v '
 			'WHERE i.violation_code = v.code ')
 		if len(clause) > 0:
-			query += "AND %s" % (clause)
-		query += ";"
+			query += "AND %s " % (clause)
+		if 'name' in kwargs and kwargs['name'] != '':
+			query += "AND name LIKE :name"
+		query += " ORDER BY inspection_date DESC;"
 		print query
 
 		# execute the query and return results
