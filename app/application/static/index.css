@@ -1,12 +1,16 @@
 html, body { 
 	height: 100%; 
-	margin: 10px; 
+	margin: 20px; 
 	background: url('background.png');
 }
 
 #map-canvas {
 	height: 65%;
 	width: 100%;
+}
+
+#form-row {
+	margin-top: 15px;
 }
 
 #scrollable-table-div {
@@ -29,7 +33,7 @@ html, body {
 	margin: 5px;
 }
 
-#dd-violation {
+#dd-violation-code {
 	width: 500px;
 }
 

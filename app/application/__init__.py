@@ -17,7 +17,7 @@ import application.views
 
 app.config.from_object('config')
 
-# Sample HTTP error handling
+# Default error handling
 @app.errorhandler(404)
 def not_found(error):
     return redirect('/'), 302

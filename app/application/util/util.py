@@ -27,9 +27,15 @@ def is_args_empty(args):
 	'''
 	Returns true if the client has not passed any args in GET request
 	'''
-	for a in args:
-		if args[a] != '':
-			return False
+	'borough', 'cuisine_type', 'violation_code'
+	if 'borough' in args and args['borough'] != '':
+		return False
+	if 'cuisine_type' in args and args ['cuisine_type'] != '':
+		return False
+	if 'violation_code' in args and args['violation_code'] != '':
+		return False
+	if 'name' in args and args['name'] != '':
+		return False
 	return True
 
 def process_query_results(results):

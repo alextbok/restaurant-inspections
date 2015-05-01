@@ -8,10 +8,6 @@ def select(kwargs):
 	Executes a select query on inspections table
 	'''	
 	with sql.connect(config.DB_PATH) as con:
-
-		print "kwargs:"
-		print "\t" + str(kwargs)
-
 		# build the query with the user-supplied arguments
 		clause = ' AND '.join(['%s = :%s' % (k, k) for k in kwargs.keys() if k in valid_params and kwargs[k] != ''])
 		query = ('SELECT * FROM inspections AS i, ' 
@@ -22,7 +18,6 @@ def select(kwargs):
 		if 'name' in kwargs and kwargs['name'] != '':
 			query += "AND name LIKE :name"
 		query += " ORDER BY inspection_date DESC;"
-		print query
 
 		# execute the query and return results
 		cursor = con.cursor()

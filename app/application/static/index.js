@@ -1,7 +1,13 @@
 $(window).load(function() {
 
+
+	$(".update-btn").click(function() {
+		console.log("update(null)");
+		update(null);
+	});
+
 	function truncate(s, thresh) {
-		return s.length > (thresh - 1) ? (s.substring(0, thresh) + " ...") : s
+		return s.length > (thresh - 1) ? (s.substring(0, thresh) + " ...") : s;
 	}
 
 	$(".dropdown-menu li a").click(function(e){
@@ -34,7 +40,6 @@ $(window).load(function() {
 		minLength: 1
 	},
 	{
-		name: 'states',
 		source: substringMatcher(restaurant_names)
 	});
 
@@ -43,3 +48,4 @@ $(window).load(function() {
 	});
 
 });
+
