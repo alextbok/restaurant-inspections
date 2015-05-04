@@ -1,9 +1,7 @@
 $(window).load(function() {
-
-
+	
 	$(".update-btn").click(function() {
-		console.log("update(null)");
-		update(null);
+		return update(null);
 	});
 
 	function truncate(s, thresh) {

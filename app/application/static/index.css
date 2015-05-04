@@ -13,7 +13,7 @@ html, body {
 	margin-top: 15px;
 }
 
-#scrollable-table-div {
+#inspections-list-div {
 	height: 65% !important;
 	overflow: scroll;
 }
