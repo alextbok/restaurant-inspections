@@ -16,17 +16,16 @@
 				window.results = {{results|tojson|safe}};
 				var markers = [];
 				window.page_number = 0;
-
+				window.infowindow = new google.maps.InfoWindow();
 				function updateList(results) {
-					console.log(results);
 					var div = document.getElementById('inspections-list-div');
 					s = '';
 					for (var i = 0; i < results.length; i++) {
-						s += '<div class="panel panel-default " id="inspection-panel-' + i + '""><div class="panel-heading">';
+						s += '<div class="panel panel-default " id="inspection-panel-' + (i + 1) + '""><div class="panel-heading">';
 						s += '<h3 class="panel-title"><strong>' + results[i]['generic']['name'] + '</strong> <small>' + results[i]['generic']['address'] + '</small></h3></div>';
 						s += '<div class="panel-body scrollable-panel">';
 							for (var j = 0; j < results[i]['specific'].length; j++) {
-								s += '<ul class="violation-list" id="violation-list-' + i + '">';
+								s += '<ul class="violation-list">';
 								s+= '<li><strong>' + results[i]['specific'][j]['date'] +'&nbsp</strong>' + results[i]['specific'][j]['description'] + '</li></ul>';
 							}
 						s += '</div></div>';
@@ -56,7 +55,6 @@
 							if (!res['page_change']) {
 								window.page_number += dir*(-1);
 								$("#results-alert").show();
-								// do something
 							} else {
 								$("#results-alert").hide();
 								window.results = res['data'];
@@ -68,10 +66,9 @@
 				}
 
 				function scrollToListElt(destination){
-					var stop = $(destination).offset().top - 80;
+					var stop = $(destination).offset().top - 120;
 					var delay = 100;
-					console.log(stop);
-					$('#inspections-list-div').animate({scrollTop: stop}, delay);
+					$('#inspections-list-div').animate({scrollTop: $('#inspections-list-div').scrollTop() + stop}, delay);
 					return false;
 				}
 
@@ -86,41 +83,38 @@
 					controlUI.style.cursor = 'pointer';
 					controlUI.style.marginBottom = '22px';
 					controlUI.style.textAlign = 'center';
+					controlUI.style.marginLeft = '1px';
 					controlUI.title = dir + ' results';
+					controlUI.className = "pagination-btn";
 					controlDiv.appendChild(controlUI);
 
 					// Set CSS for the control interior
 					var controlText = document.createElement('div');
 					controlText.style.color = 'rgb(25,25,25)';
 					controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
-					controlText.style.fontSize = '16px';
+					controlText.style.fontSize = '12px';
+					controlText.style.width = '60px';
+					controlText.style.height = '25px';
 					controlText.style.lineHeight = '38px';
-					controlText.style.paddingLeft = '5px';
-					controlText.style.paddingRight = '5px';
+					controlText.style.marginBottom = '10px';
 					if (dir == "Previous"){
-						controlText.innerHTML = '<span class="glyphicon glyphicon-menu-left"></span>';
+						controlText.innerHTML = '<small><span class="glyphicon glyphicon-menu-left"></span> Previous</small>';
 					}
 					if (dir == "Next") {
-						controlText.innerHTML = '<span class="glyphicon glyphicon-menu-right"></span>';
+						controlText.innerHTML = '<small>Next <span class="glyphicon glyphicon-menu-right"></span></small>';
 					}					
 					controlUI.appendChild(controlText);
 
 					// Setup the click event listeners
 					google.maps.event.addDomListener(controlUI, 'click', function() {
-						if (dir == "Previous"){
-							update(-1);
-						}
-						if (dir == "Next") {
-							update(1);
-						}
-						
+						return dir == "Previous" ? update(-1) : update(1)
 					});
 
 				}
 
 				function initialize() {
 					var mapOptions = {
-						center: { lat: 40.8015921, lng: -73.71091 },
+						center: { lat: 40.755632, lng: -73.985258 },
 						zoom: 10
 					};
 					window.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
@@ -149,12 +143,9 @@
 					});
 					markers.push(marker);
 
-					var infowindow = new google.maps.InfoWindow({
-						content: elt['generic']['name']
-					});
-
 					google.maps.event.addListener(marker, 'click', function() {
-						infowindow.open(window.map, marker);
+						window.infowindow.setContent(elt['generic']['name']);
+						window.infowindow.open(window.map, marker);
 						scrollToListElt($('#inspection-panel-' + i));
 					});
 				}
@@ -162,7 +153,7 @@
 				function drop() {
 					clearMarkers();
 					for (var i = 0; i <  window.results.length; i++) {
-						addMarker(window.results[i], window.map, i);
+						addMarker(window.results[i], window.map, i + 1);
 					}
 				}
 
@@ -187,7 +178,7 @@
 		<div class="container">
 			<div class="row">
 				<div id="results-alert" class="alert alert-warning" hidden="true" role="alert">
-				  <a href="#" class="alert-link">No more results</a>
+				  <a href="#" class="alert-link">No results</a>
 				</div>
 				<div class="col-md-6">
 					<div id="map-canvas"></div>
@@ -201,7 +192,7 @@
 											<h3 class="panel-title"><strong>{{r['generic']['name']}}</strong> <small>{{r['generic']['address']}}</small></h3>
 										</div>
 										<div class="panel-body scrollable-panel">
-											<ul class="violation-list" id="violation-list-{{loop.index}}">
+											<ul class="violation-list">
 											{% for insp in r['specific'] %}
 												<li><strong>{{insp['date']}}&nbsp</strong> {{insp['description']}}</li>
 											{% endfor %}

@@ -23,10 +23,22 @@ html, body {
 	overflow: scroll;
 }
 
+.tt-suggestion {
+	background: white;
+}
+
+.tt-suggestion:hover {
+	opacity: .5;
+}
+
 .scrollable-menu {
     height: auto;
     max-height: 130px;
     overflow-x: hidden;
+}
+
+.pagination-btn:hover {
+	opacity: .8;
 }
 
 .dropdown-toggle {

@@ -1,5 +1,6 @@
 $(window).load(function() {
-	
+
+
 	$(".update-btn").click(function() {
 		return update(null);
 	});
