@@ -18,7 +18,7 @@ html, body {
 	overflow: scroll;
 }
 
-.scrollable-panel ul {
+.scrollable-panel {
 	white-space: nowrap;
 	overflow: scroll;
 }

@@ -7,6 +7,7 @@ import json
 from application import app
 from application.db import db
 from application.util import util, memoized
+from werkzeug import datastructures
 
 violations = util.get_client_violations()
 restaurant_names = util.get_client_names()
@@ -35,22 +36,29 @@ def update():
 	if "page_number" in request.args:
 		page_number = int(request.args["page_number"])
 		if page_number < 0:
-			print "\t\t\t UPDATE 1" 
 			d = { 'data' : get_results(request.args)[:config.STEP_SIZE], 'page_change' : False }
 		else:
-			print "\t\t\t UPDATE 2" 
 			d = { 'data' : get_results(request.args)[config.STEP_SIZE*page_number:(config.STEP_SIZE*page_number + config.STEP_SIZE)], 'page_change' : True }
-	else:
-		print "\t\t\t UPDATE 3" 
+	else: 
 		d = { 'data' : get_results(request.args)[:config.STEP_SIZE], 'page_change' : True }
 	if len(d['data']) == 0:
-		print "\t\t\t UPDATE 4" 
 		d['page_change'] = False
 	return json.dumps(d)
 
-@memoized.Memoized
-def get_results(args):
+@memoized.lru_cache(maxsize=config.CACHE_SIZE)
+def get_results_cached(args):
+	'''
+	Decorated with a least recently used cache. Cache hits will not be evaluated by the database
+	'''
+	#print get_results_cached.cache_info()
 	return default_results if util.is_args_empty(args) else util.process_query_results(db.select(args))
+
+def get_results(args):
+	'''
+	Wrapper for above method. Creates a new immutable (i.e. hashable) dict from the GET parameters
+	and ignores the 'page_number' parameter, as we do not want to consider it for caching
+	'''
+	return get_results_cached(datastructures.ImmutableMultiDict(mapping={ k : args[k] for k in args if k != 'page_number' }))
 
 
 
