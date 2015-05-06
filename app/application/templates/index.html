@@ -21,7 +21,7 @@
 					var div = document.getElementById('inspections-list-div');
 					s = '';
 					for (var i = 0; i < results.length; i++) {
-						s += '<div class="panel panel-default " id="inspection-panel-' + (i + 1) + '""><div class="panel-heading">';
+						s += '<div class="panel panel-primary " id="inspection-panel-' + (i + 1) + '""><div class="panel-heading">';
 						s += '<h3 class="panel-title"><strong>' + results[i]['generic']['name'] + '</strong> <small>' + results[i]['generic']['address'] + '</small></h3></div>';
 						s += '<div class="panel-body scrollable-panel">';
 							for (var j = 0; j < results[i]['specific'].length; j++) {
@@ -66,9 +66,11 @@
 				}
 
 				function scrollToListElt(destination){
-					var stop = $(destination).offset().top - 120;
-					var delay = 100;
-					$('#inspections-list-div').animate({scrollTop: $('#inspections-list-div').scrollTop() + stop}, delay);
+					var stop = $(destination).offset().top - 170;
+					var delay = 0;
+					$('#inspections-list-div').animate({scrollTop: $('#inspections-list-div').scrollTop() + stop}, delay, function() {
+						$(destination).fadeOut(500).fadeIn(500);
+					});
 					return false;
 				}
 
@@ -115,7 +117,7 @@
 				function initialize() {
 					var mapOptions = {
 						center: { lat: 40.755632, lng: -73.985258 },
-						zoom: 10
+						zoom: 11
 					};
 					window.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 					drop();
@@ -176,38 +178,11 @@
 
 	<body>
 		<div class="container">
-			<div class="row">
-				<div id="results-alert" class="alert alert-warning" hidden="true" role="alert">
-				  <a href="#" class="alert-link">No results</a>
-				</div>
-				<div class="col-md-6">
-					<div id="map-canvas"></div>
-				</div>
-					<div class="col-md-6">
-							<div class="accordion" id="accordion-parent">
-								<div id="inspections-list-div">
-								{% for r in results %}
-									<div class="panel panel-default" id="inspection-panel-{{loop.index}}">
-										<div class="panel-heading">
-											<h3 class="panel-title"><strong>{{r['generic']['name']}}</strong> <small>{{r['generic']['address']}}</small></h3>
-										</div>
-										<div class="panel-body scrollable-panel">
-											<ul class="violation-list">
-											{% for insp in r['specific'] %}
-												<li><strong>{{insp['date']}}&nbsp</strong> {{insp['description']}}</li>
-											{% endfor %}
-											</ul>
-	  									</div>
-									</div>
-								{% endfor %}
-								</div>
-							</div>
-				</div>
-				</div>
+
 				<div class="row" id="form-row">
-					<div class="panel panel-default">
+					<div class="panel panel-primary">
 						<div class="panel-heading">
-    						<h3 class="panel-title">Search</h3>
+    						<h1 class="panel-title" align="center">Restaurant Inspections in New York City</h1>
   						</div>
   						<div class="panel-body">
 							<input id="violation-input" name="violation_code" type="hidden">
@@ -224,7 +199,7 @@
 									</li>
 								{% for v in violations %}
 									<li title="{{v[3]}}">
-										<a onclick="$('#violation-input').val('{{v[0]}}');"><strong>{{v[2]}}</strong> (count: {{v[1]}})</a>
+										<a onclick="$('#violation-input').val('{{v[0]}}');"><strong>{{v[2]}}</strong> <small>{{v[1]}}</small></a>
 									</li>
 								{% endfor %}
 								</ul>
@@ -262,6 +237,35 @@
 						</div>
 					</div>
 				</div>
+			<div class="row">
+				<div id="results-alert" class="alert alert-warning alert-dismissible" hidden="true" role="alert">
+					<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<strong>No Results</strong>
+				</div>
+				<div class="col-md-6">
+					<div id="map-canvas"></div>
+				</div>
+					<div class="col-md-6">
+							<div class="accordion" id="accordion-parent">
+								<div id="inspections-list-div">
+								{% for r in results %}
+									<div class="panel panel-primary" id="inspection-panel-{{loop.index}}">
+										<div class="panel-heading">
+											<h3 class="panel-title"><strong>{{r['generic']['name']}}</strong> <small>{{r['generic']['address']}}</small></h3>
+										</div>
+										<div class="panel-body scrollable-panel">
+											<ul class="violation-list">
+											{% for insp in r['specific'] %}
+												<li><strong>{{insp['date']}}&nbsp</strong> {{insp['description']}}</li>
+											{% endfor %}
+											</ul>
+	  									</div>
+									</div>
+								{% endfor %}
+								</div>
+							</div>
+				</div>
+			</div>
 		</div>
 	</body>
 

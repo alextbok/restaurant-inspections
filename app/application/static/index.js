@@ -1,6 +1,10 @@
 $(window).load(function() {
 
+	$('.close').click(function() {
 
+		$('#results-alert').hide();
+
+	})
 	$(".update-btn").click(function() {
 		return update(null);
 	});
@@ -44,6 +48,12 @@ $(window).load(function() {
 
 	$('.restaurant-names-typeahead').on('typeahead:selected', function(evt, item) {
 		$('#restaurant-name-input').val(item);
+	});
+
+	$('.restaurant-names-typeahead').on('keydown', function (e) {
+		if ($('.restaurant-names-typeahead').val() == '') {
+			$('#restaurant-name-input').val('');
+		}
 	});
 
 });

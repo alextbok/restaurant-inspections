@@ -1,20 +1,17 @@
 html, body { 
 	height: 100%; 
-	margin: 20px; 
+	margin: 10px; 
 	background: url('background.png');
+	overflow: hidden;
 }
 
 #map-canvas {
-	height: 65%;
+	height: 75%;
 	width: 100%;
 }
 
-#form-row {
-	margin-top: 15px;
-}
-
 #inspections-list-div {
-	height: 65% !important;
+	height: 75% !important;
 	overflow: scroll;
 }
 

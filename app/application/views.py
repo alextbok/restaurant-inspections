@@ -12,7 +12,7 @@ from werkzeug import datastructures
 violations = util.get_client_violations()
 restaurant_names = util.get_client_names()
 cuisine_types = util.get_cuisine_types()
-default_results = util.process_query_results(db.select({"violation_code" : "06I"}))
+default_results = util.process_query_results(db.select({'violation_code' : '04L', 'borough' : 1, 'cuisine_type' : 'Japanese'}))
 
 @app.route('/', methods=['GET'])
 def index():
