@@ -146,9 +146,11 @@
 					markers.push(marker);
 
 					google.maps.event.addListener(marker, 'click', function() {
+						scrollToListElt($('#inspection-panel-' + i));
+					});
+					google.maps.event.addListener(marker, 'mouseover', function() {
 						window.infowindow.setContent(elt['generic']['name']);
 						window.infowindow.open(window.map, marker);
-						scrollToListElt($('#inspection-panel-' + i));
 					});
 				}
 

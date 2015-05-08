@@ -24,16 +24,13 @@ def select(kwargs):
 		cursor.execute(query, kwargs)
 		ret = []
 		for row in cursor.fetchall():
-			_, _, name, borough, address, _zip, cuisine_type, inspection_date, action, _, score, current_grade, lat, lng, _, _, description = row
+			_, _, name, borough, address, _zip, cuisine_type, inspection_date, _, _, _, _, lat, lng, _, _, description = row
 			yield { 'name' : name, 
 					'borough' : borough, 
 					'address' : address, 
 					'zip' : _zip, 
 					'cuisine_type' : cuisine_type, 
-					'inspection_date' : inspection_date, 
-					'action' : action, 
-					'score' : score, 
-					'current_grade' : current_grade, 
+					'inspection_date' : inspection_date,
 					'lat' : lat, 
 					'lng' : lng, 
 					'description' : description }

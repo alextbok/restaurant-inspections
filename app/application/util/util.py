@@ -49,8 +49,7 @@ def process_query_results(results):
 				"borough" : r["borough"],
 				"cuisine_type" : r["cuisine_type"],
 				"address" : r["address"].title() + ", " + r["zip"],
-				"name" : r["name"].title() }
-
+				"name" : r["name"].title().replace("'S", "'s") }
 		specific = { "description" : r["description"], 
 				"date" : r["inspection_date"] }
 		try:
