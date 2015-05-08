@@ -246,24 +246,24 @@
 					<div id="map-canvas"></div>
 				</div>
 					<div class="col-md-6">
-							<div class="accordion" id="accordion-parent">
-								<div id="inspections-list-div">
-								{% for r in results %}
-									<div class="panel panel-primary" id="inspection-panel-{{loop.index}}">
-										<div class="panel-heading">
-											<h3 class="panel-title"><strong>{{r['generic']['name']}}</strong> <small>{{r['generic']['address']}}</small></h3>
-										</div>
-										<div class="panel-body scrollable-panel">
-											<ul class="violation-list">
-											{% for insp in r['specific'] %}
-												<li><strong>{{insp['date']}}&nbsp</strong> {{insp['description']}}</li>
-											{% endfor %}
-											</ul>
-	  									</div>
+						<div class="accordion" id="accordion-parent">
+							<div id="inspections-list-div">
+							{% for r in results %}
+								<div class="panel panel-primary" id="inspection-panel-{{loop.index}}">
+									<div class="panel-heading">
+										<h3 class="panel-title"><strong>{{r['generic']['name']}}</strong> <small>{{r['generic']['address']}}</small></h3>
 									</div>
-								{% endfor %}
+									<div class="panel-body scrollable-panel">
+										<ul class="violation-list">
+										{% for insp in r['specific'] %}
+											<li><strong>{{insp['date']}}&nbsp</strong> {{insp['description']}}</li>
+										{% endfor %}
+										</ul>
+	  								</div>
 								</div>
+							{% endfor %}
 							</div>
+						</div>
 				</div>
 			</div>
 		</div>

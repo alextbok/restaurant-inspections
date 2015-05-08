@@ -12,6 +12,7 @@ from datetime import datetime as dt
 inspections_schema = ("DROP TABLE IF EXISTS inspections;"
 		"CREATE TABLE inspections ("
 			"id INTEGER PRIMARY KEY AUTOINCREMENT,"
+			"camis_id INTEGER,"
 			"name VARCHAR(255),"
 			"borough SMALLINT,"
 			"address VARCHAR(255),"
@@ -125,6 +126,7 @@ def load_inspections(path):
 		reader.next() # skip header
 		
 		rows = [{"name" : unicode(r[1], "utf-8"),
+				"camis_id" : unicode(r[0], "utf-8"),
 				"borough" : unicode(r[2], "utf-8"),
 				"address" : (unicode(r[3], "utf-8") + " " + unicode(r[4], "utf-8")),
 				"zip" : unicode(r[5], "utf-8"),
@@ -137,6 +139,7 @@ def load_inspections(path):
 				"lat" : unicode(r[17], "utf-8"),
 				"lng" : unicode(r[18], "utf-8")} for r in reader]
 		to_db = [(e["name"], 
+				e["camis_id"], 
 				e["borough"],
 				e["address"],
 				e["zip"],
@@ -148,7 +151,8 @@ def load_inspections(path):
 				e["current_grade"],
 				e["lat"],
 				e["lng"]) for e in rows]
-		query = ("INSERT INTO inspections (name,"
+		query = ("INSERT OR IGNORE INTO inspections (name,"
+			"camis_id,"
 			"borough,"
 			"address,"
 			"zip,"
@@ -159,7 +163,7 @@ def load_inspections(path):
 			"score,"
 			"current_grade,"
 			"lat,"
-			"lng) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);")
+			"lng) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);")
 		con = sql.connect(config.DB_PATH)
 		con.executemany(query, to_db)
 		con.commit()

@@ -24,7 +24,7 @@ def select(kwargs):
 		cursor.execute(query, kwargs)
 		ret = []
 		for row in cursor.fetchall():
-			_, name, borough, address, _zip, cuisine_type, inspection_date, action, _, score, current_grade, lat, lng, _, _, description = row
+			_, _, name, borough, address, _zip, cuisine_type, inspection_date, action, _, score, current_grade, lat, lng, _, _, description = row
 			yield { 'name' : name, 
 					'borough' : borough, 
 					'address' : address, 

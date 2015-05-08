@@ -12,10 +12,11 @@ from werkzeug import datastructures
 violations = util.get_client_violations()
 restaurant_names = util.get_client_names()
 cuisine_types = util.get_cuisine_types()
-default_results = util.process_query_results(db.select({'violation_code' : '04L', 'borough' : 1, 'cuisine_type' : 'Japanese'}))
+default_results = util.process_query_results(db.select({'violation_code' : '04L'}))
 
 @app.route('/', methods=['GET'])
 def index():
+	print get_results_cached.cache_info()
 	js_url = url_for('static', filename='index.js')
 	css_url = url_for('static', filename='index.css')
 	typeahead_url = url_for('static', filename='typeahead.js')
@@ -50,7 +51,6 @@ def get_results_cached(args):
 	'''
 	Decorated with a least recently used cache. Cache hits will not be evaluated by the database
 	'''
-	#print get_results_cached.cache_info()
 	return default_results if util.is_args_empty(args) else util.process_query_results(db.select(args))
 
 def get_results(args):

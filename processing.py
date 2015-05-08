@@ -1,5 +1,7 @@
-#!/usr/bin/python
-
+'''
+Ignore this script. This was originally used to explore that dataset to 
+see if it was of interest to me. It is in no way used in my project.
+'''
 import csv
 import itertools
 
@@ -30,10 +32,8 @@ def query(code, inspections):
 
 if __name__=="__main__":
 
-
 	vcodes = {r[3]:r[4] for r in get_data('./violation_codes.csv')[1]}
 	inspections = get_inspections(get_data('./inspections.csv')[1], vcodes)
-
 
 	rs = query('05B', inspections)
 	print 'restaurants:'
