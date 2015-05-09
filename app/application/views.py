@@ -30,6 +30,7 @@ def index():
 		violations=violations,
 		restaurant_names=restaurant_names,
 		cuisine_types=cuisine_types,
+		num_results=len(default_results),
 		results=get_results(request.args)[:config.STEP_SIZE])
 
 @app.route('/update/', methods=['GET'])
@@ -37,11 +38,14 @@ def update():
 	if "page_number" in request.args:
 		page_number = int(request.args["page_number"])
 		if page_number < 0:
-			d = { 'data' : get_results(request.args)[:config.STEP_SIZE], 'page_change' : False }
+			data = get_results(request.args)
+			d = { 'data' : data[:config.STEP_SIZE], 'num_results' : len(data), 'page_change' : False }
 		else:
-			d = { 'data' : get_results(request.args)[config.STEP_SIZE*page_number:(config.STEP_SIZE*page_number + config.STEP_SIZE)], 'page_change' : True }
+			data = get_results(request.args)
+			d = { 'data' : data[config.STEP_SIZE*page_number:(config.STEP_SIZE*page_number + config.STEP_SIZE)], 'num_results' : len(data), 'page_change' : True }
 	else: 
-		d = { 'data' : get_results(request.args)[:config.STEP_SIZE], 'page_change' : True }
+		data = get_results(request.args)
+		d = { 'data' : data[:config.STEP_SIZE], 'num_results' : len(data), 'page_change' : True }
 	if len(d['data']) == 0:
 		d['page_change'] = False
 	return json.dumps(d)

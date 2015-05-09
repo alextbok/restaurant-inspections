@@ -45,6 +45,8 @@
 					if (dir != null) {
 						window.page_number += dir;
 						params += '&page_number=' + window.page_number.toString();
+					} else {
+						window.page_number = 0;
 					}
 					$.ajax({
 						type: "GET",
@@ -60,6 +62,8 @@
 								window.results = res['data'];
 								updateList(window.results);
 								drop();
+								console.log(window.page_number);
+								$('.current-pagination-info').html(getResultsDomainText(window.page_number, res['num_results']));	
 							}
 						}
 					});
@@ -72,6 +76,40 @@
 						$(destination).fadeOut(500).fadeIn(500);
 					});
 					return false;
+				}
+
+				function getResultsDomainText(page_number, num_results) {
+					var nums = [50*page_number, Math.min(50*page_number + 50, num_results)]
+					var s = '<small>Showing ' + nums[0] + ":" + nums[1] + ' out of ' + num_results + ' restaurants</small>'
+					return s;
+				}
+
+				function UIInfo(div, map) {
+					// Set CSS for the control border
+					var innerDiv = document.createElement('div');
+					innerDiv.style.backgroundColor = '#fff';
+					innerDiv.style.border = '2px solid #fff';
+					innerDiv.style.borderRadius = '3px';
+					innerDiv.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+					innerDiv.style.cursor = 'pointer';
+					innerDiv.style.marginBottom = '22px';
+					innerDiv.style.textAlign = 'center';
+					innerDiv.style.marginLeft = '1px';
+					div.appendChild(innerDiv);
+
+					// Set CSS for the control interior
+					var innerText = document.createElement('div');
+					innerText.style.color = 'rgb(25,25,25)';
+					innerText.style.fontFamily = 'Roboto,Arial,sans-serif';
+					innerText.style.fontSize = '12px';
+					innerText.style.width = '250px';
+					innerText.style.height = '25px';
+					innerText.style.lineHeight = '38px';
+					innerText.style.marginBottom = '10px';
+					innerText.style.marginLeft = '10px';
+					innerText.className = 'current-pagination-info'
+					innerText.innerHTML = getResultsDomainText(0, {{num_results}});				
+					innerDiv.appendChild(innerText);
 				}
 
 				function UIControl(controlDiv, map, dir) {
@@ -119,13 +157,18 @@
 						center: { lat: 40.755632, lng: -73.985258 },
 						zoom: 11
 					};
-					window.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+					window.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 					drop();
 
 					var prevControlDiv = document.createElement('div');
 					var prevControl = new UIControl(prevControlDiv, window.map, "Previous");
 					prevControlDiv.index = 1;
 					map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(prevControlDiv);
+
+					var infoDiv = document.createElement('div');
+					var info = new UIInfo(infoDiv, window.map);
+					infoDiv.index = 1;
+					map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(infoDiv);
 
 					var nextControlDiv = document.createElement('div');
 					var nextControl = new UIControl(nextControlDiv, window.map, "Next");
