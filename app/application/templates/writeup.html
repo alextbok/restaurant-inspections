@@ -1,0 +1,190 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Project | Data Science 2015</title>
+</head>
+
+<body>
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="page-header center">
+                <h3><img src="{{logo_url}}"></img>&nbsp&nbspRestaurant Inspections in New York City <small>Data Science | Spring 2015 | Alexander Bok (abok)</small>&nbsp&nbsp<img src="{{logo_url}}"></img></h3>
+            </div>
+            <div class="row">
+                <h2>About the project</h2>
+                <p>
+                    For my final project, I built a web application that enables users browse and query restaurant inspections in New York City. Users can refine their search results with the following parameters:
+                </p>
+                <ul style="list-style: none;">
+                    <li>Violation</li>
+                    <li>Borough</li>
+                    <li>Cuisine Type</li>
+                    <li>Restaurant Name</li>
+                </ul>
+                <h2>Data Set</h2>
+                <p>
+                    I found the data set <a href="https://app.enigma.io/table/us.states.ny.cities.nyc.dohmh.restaurants.inspections?row=312&col=0&page=1">here</a>, which is a large repository for public data. The data comprises two tables. Ferst is a table of ~535,000 inspections, each of which contain the date the inspection took place, the restaurant, address, violation code, and some other attributes. The inspections span from 2011 to 2014. The other table contained the violation codes and their corresponding descriptions.
+                </p>
+                <h2>Methodology</h2>
+                <h3>ETL</h3>
+                <p>
+                    Unfortunantely, the dataset was very dirty so ETL took longer than expected. (Even after all of the warning in lecture and guest lectures about how this is always the most time consuming process, I still managed to greatly underestimate how long it would take). I really wanted to do more with the given grades of the inspections, but there were too many null cases. The other tedious part of ETL was geocoding the ~22,000 addresses. Despite the many batch geocoding APIs available, none of them were free and none of them were cheap. To circumvent this, I sent up a rate-limited python script to fetch coordinates for one address, pause for 1.2 seconds, and then fetch another. The server timed out often, so I had to reset the script a bunch and the process took about 5 days. Even then, there were a bunch of null values returned by the service, so I had to use another service for the remaining 2,000 addresses. For this, I split them up into 20 csv files and manually uploaded them to a service that allows batch encoding for free, for up to 100 addresses per batch.
+                </p>
+                <h3>The Service</h3>
+                <p>
+                    Throughout the project, I tried to prepare the service to be launched live and handle many simultaneous requests. I therefore spent a lot of time optimizing it and designed it in a way to reduce the load on the server per session. The client facing service is a map from the Google Maps API embedded in an html page, with a search bar and a list of search results. The service is stateless, and each page refresh loads the default results. On an update or pagination, the client issues an AJAX request to a Flask application with a sqlite backend. Pagination is setup so a maximum of 50 results are displayed at a time. This is necessary, as most queries defined using the available parameters will return over a thousand results. To handle (potentially) many clients querying the same instance of SQL with over half a million rows, I use a thread safe cache that implements a least-recently-used scheme with a maximum size of 128 requests (my original, nonconcurrent cache grew without bounds and was for obvious reasons infeasible). This makes pagination lightening fast. Before using the cache, requesting the next page would take over 2 seconds. Furthermore, this greatly reduces the load on the SQL instance.
+                </p>
+                <h2>Analysis</h2>
+                <p>
+                    Most of this project was about enabling people to browse and query the data set. However, in preparation for the poster session, I ran a few SQL queries to provide some analysis component. There are certainly a few interesting results, and I'm sure there is much more interesting information that I failed to think of to be mined from this set. Below are the results of some of the queries I ran.
+                </p>
+                <h3>Most Commonly Co-occurring Violations</h3>
+                    <p>
+                        Two violations co-occur if a restaurant violates them both. Below are the top five, barring ones that contain violation 10F (<i>Non-food contact surface improperly constructed. Unacceptable material used. Non-food contact surface or equipment improperly maintained and/or not properly sealed, raised, spaced or movable to allow accessibility for cleaning on all sides, above and underneath the unit.</i>), which is by far the most common violation. Many of the pairs are intuitive. For example, we'd expect a high incidence of vermin among restaurants that are deemed not vermin proof.
+                    </p>
+                    <ul><small>
+                        <li>Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist.</li>
+                        <li>Evidence of mice or live mice present in facility's food and/or non-food areas.</li>
+                        <hr>
+                        <li>Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist.</li>
+                        <li>Plumbing not properly installed or maintained; anti-siphonage or backflow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly.</li>
+                        <hr>
+                        <li>Filth flies or food/refuse/sewage-associated (FRSA) flies present in facilitys food and/or non-food areas. Filth flies include house flies, little house flies, blow flies, bottle flies and flesh flies. Food/refuse/sewage-associated flies include fruit flies, drain flies and Phorid flies.</li>
+                        <li>Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist.</li>
+                        <hr>
+                        <li>Hot food item not held at or above 140 F.</li>
+                        <li>Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation.</li>
+                        <hr>
+                        <li>Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation.</li>
+                        <li>Food not protected from potential source of contamination during storage, preparation, transportation, display or service.</li>
+                    </small></ul>
+                <h3>Most Common Violations By Cuisine Type</h3>
+                <p>
+                    Next I calculated the highest percentage of violations by cuisine type. Below are the top 5 by percentage (agian I ignored violation 10F). Cuisine types that comprise less than 5 restaurants are also ignored.
+                </p>
+                <ul style="list-style: none;">
+                    <li><strong>0.25000 Hawaiian</strong> <small>"Sanitized equipment or utensil, including in-use food dispensing utensil, improperly used or stored."</small></li>
+                    <hr>
+                    <li><strong>0.22222 Creole/Cajun</strong> <small>"Wiping cloths soiled or not stored in sanitizing solution."</small></li>
+                    <hr>
+                    <li><strong>0.21428 Southwestern</strong> <small>"Hot food item not held at or above 140 F."</small></li>
+                    <hr>
+                    <li><strong>0.21293 Soups & Sandwiches</strong> <small>"Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation."</small></li>
+                    <hr>
+                    <li><strong>0.20000 Fruits/Vegetables</strong> <small>"Filth flies or food/refuse/sewage-associated (FRSA) flies present in facilitys food and/or non-food areas. Filth flies include house flies, little house flies, blow flies, bottle flies and flesh flies. Food/refuse/sewage-associated flies include fruit flies, drain flies and Phorid flies."</small></li>
+                </ul>
+                <h3>Most Common Violations By Borough</h3>
+                <p>
+                    Similarly to the above query, I broke down the most common violations by borough. Again, violation 10F is ignored. The results of this query aren't particularly interesting, as all boroughs have the same top 5 violations (albeit in different orders) with similar percentages.
+                </p>
+                <ul style="list-style: none;">
+                    <ul style="list-style: none;">
+                        <li><h4>Manhattan</h4></li>
+                        <li><strong>0.09475</strong> <small>"Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation."</small></li> 
+                        <li><strong>0.09285</strong> <small>"Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist."</small></li>
+                        <li><strong>0.07197</strong> <small>"Evidence of mice or live mice present in facility's food and/or non-food areas."</small></li>
+                        <li><strong>0.06643</strong> <small>"Plumbing not properly installed or maintained; anti-siphonage or backflow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly."</small></li>
+                    </ul> 
+                    <ul style="list-style: none;">
+                        <li><h4>Brooklyn</h4></li>
+                        <li><strong>0.10128</strong> <small>"Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist."</small></li> 
+                        <li><strong>0.08268</strong> <small>"Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation."</small></li>
+                        <li><strong>0.08041</strong> <small>"Evidence of mice or live mice present in facility's food and/or non-food areas."</small></li>
+                        <li><strong>0.05941</strong> <small>"Plumbing not properly installed or maintained; anti-siphonage or backflow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly."</small></li>
+                    </ul>  
+                    <ul style="list-style: none;">
+                        <li><h4>Bronx</h4></li>
+                        <li><strong>0.10397</strong> <small>"Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist."</small></li> 
+                        <li><strong>0.08167</strong> <small>"Evidence of mice or live mice present in facility's food and/or non-food areas."</small></li>
+                        <li><strong>0.07535</strong> <small>"Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation."</small></li>
+                        <li><strong>0.05730</strong> <small>"Plumbing not properly installed or maintained; anti-siphonage or backflow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly."</small></li>
+                    </ul>  
+                    <ul style="list-style: none;">
+                        <li><h4>Queens</h4></li>
+                        <li><strong>0.09795</strong> <small>"Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist."</small></li> 
+                        <li><strong>0.08072</strong> <small>"Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation."</small></li>
+                        <li><strong>0.07821</strong> <small>"Evidence of mice or live mice present in facility's food and/or non-food areas."</small></li>
+                        <li><strong>0.05938</strong> <small>"Plumbing not properly installed or maintained; anti-siphonage or backflow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly."</small></li>
+                    </ul>  
+                    <ul style="list-style: none;">
+                        <li><h4>Staten Island</h4></li>
+                        <li><strong>0.08862</strong> <small>"Cold food item held above 41 F (smoked fish and reduced oxygen packaged foods above 38 F) except during necessary preparation."</small></li> 
+                        <li><strong>0.07193</strong> <small>"Facility not vermin proof. Harborage or conditions conducive to attracting vermin to the premises and/or allowing vermin to exist."</small></li>
+                        <li><strong>0.06902</strong> <small>"Food contact surface not properly washed, rinsed and sanitized after each use and following any activity when contamination may have occurred."</small></li>
+                        <li><strong>0.06695</strong> <small>"Plumbing not properly installed or maintained; anti-siphonage or backflow prevention device not provided where required; equipment or floor not properly drained; sewage disposal system in disrepair or not functioning properly."</small></li>
+                    </ul>    
+                    <hr>                  
+                </ul>
+                <h3>Likeliness of Repeating a Violation</h3>
+                <p>
+                    One of the most alarming conclusions I found that <strong>48.6%</strong> of violations are repeating. A violation is considered to be repeated if a restaurant that commits the violation commits it again in a later year.
+                </p>
+                <h3>Rodent Incidence</h3>
+                <p>
+                    When most people think of restaurant inspections (and New York for that matter), they think of rodent infestations so I thought it'd be fun to take a look at this particular violation, 04L, (<i>"Evidence of mice or live mice present in facility's food and/or non-food areas."</i>) in some more detail. The following percentages describe the ratio of restaurants that have violated 04L. Staten Island clearly has the lowest rodent incidence per among its restaurants, while the other boroughs are roughly equal. It's interesting to see the results filtered by cuisine type; perhaps salads, smoothies and donuts have such a low incidence because they emit less smell, while the cuisine types that use a lot of spices may attract more mice. Looking at map broken down by zip code, there is an interesting cluster that appears in lower Manhattan. Perhaps lower incidence is correlated with proximity to the water.
+                </p>
+                <ul style="list-style: none;">
+                    <li><h4>By Borough</h4></li>
+                    <li><strong>0.60975</strong> <small>Queens</small></li> 
+                    <li><strong>0.60049</strong> <small>Bronx</small></li>
+                    <li><strong>0.57860</strong> <small>Brooklyn</small></li>
+                    <li><strong>0.57634</strong> <small>Manahattan</small></li>
+                    <li><strong>0.44553</strong> <small>Staten Island</small></li>
+                </ul>    
+                <hr> 
+                <ul style="list-style: none;">
+                    <li><h4>By Cuisine Type (Highest)</h4></li>
+                    <li><strong>0.75000</strong> <small>Indonesian</small></li> 
+                    <li><strong>0.65517</strong> <small>Polish</small></li>
+                    <li><strong>0.61538</strong> <small>Afghan</small></li>
+                </ul>    
+                <hr> 
+                
+                <ul style="list-style: none;">
+                    <li><h4>By Cuisine Type (Lowest)</h4></li>
+                    <li><strong>0.09677</strong> <small>Salads</small></li> 
+                    <li><strong>0.10244</strong> <small>Juice, Smoothies, Fruit Salads</small></li>
+                    <li><strong>0.14607</strong> <small>Donuts</small></li>
+                </ul>    
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <ul style="list-style: none;">
+                            <li><h4>By Zip Code (Highest)</h4></li>
+                            <li><strong>0.90476</strong> <small>11411 (A)</small></li> 
+                            <li><strong>0.78947</strong> <small>11428 (B)</small></li>
+                            <li><strong>0.76923</strong> <small>11040 (C)</small></li>
+                            <li><strong>0.75000</strong> <small>11419 (D)</small></li>
+                            <li><strong>0.73239</strong> <small>11021 (E)</small></li>
+                            <li><strong>0.72185</strong> <small>10065 (F)</small></li>
+                        </ul> 
+                    </div>  
+                    <div class="col-md-8">
+                       <img src="{{zip_high_url}}"></img>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <ul style="list-style: none;">
+                            <li><h4>By Zip Code (Lowest)</h4></li>
+                            <li><strong>0.11111</strong> <small>10044 (A)</small></li> 
+                            <li><strong>0.17777</strong> <small>10005 (B)</small></li>
+                            <li><strong>0.20000</strong> <small>10282 (C)</small></li>
+                            <li><strong>0.20000</strong> <small>10281 (D)</small></li>
+                            <li><strong>0.20313</strong> <small>10309 (Staten Island, not on map)</small></li>
+                            <li><strong>0.21429</strong> <small>10020 (F)</small></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-8">
+                        <img src="{{zip_low_url}}"></img>
+                    </div>
+                </div>  
+                <hr>   
+            </div>
+</body>
+</html>

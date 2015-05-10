@@ -50,6 +50,16 @@ def update():
 		d['page_change'] = False
 	return json.dumps(d)
 
+@app.route('/writeup/', methods=['GET'])
+def writeup():
+	logo_url = url_for('static', filename='hazard.png')
+	zip_high_url = url_for('static', filename='zip_high.png')
+	zip_low_url = url_for('static', filename='zip_low.png')
+	return render_template('writeup.html', 
+		logo_url=logo_url,
+		zip_high_url=zip_high_url,
+		zip_low_url=zip_low_url)
+
 @memoized.lru_cache(maxsize=config.CACHE_SIZE)
 def get_results_cached(args):
 	'''

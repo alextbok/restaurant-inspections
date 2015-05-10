@@ -7,7 +7,8 @@ SELECT inspections.cuisine_type, violation_code, description, ( COUNT(violation_
 			SELECT cuisine_type, COUNT(*) AS c
 				FROM inspections
 					WHERE cuisine_type != '' 
-			GROUP BY cuisine_type
+			GROUP BY cuisine_type 
+			HAVING c > 5
 		) AS counts
 		WHERE inspections.cuisine_type != '' 
 			AND violation_code != '' 

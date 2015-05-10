@@ -8,6 +8,7 @@ SELECT inspections.zip, ( COUNT(DISTINCT(address)) / CAST(totals.count AS FLOAT)
 			SELECT COUNT(DISTINCT(address)) AS count, zip
 				FROM inspections
 			GROUP BY zip
+			HAVING count > 5
 		) AS totals 
 		WHERE violation_code = '04L' 
 			AND totals.zip = inspections.zip

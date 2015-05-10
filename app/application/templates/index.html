@@ -6,7 +6,7 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">-->
+
 		<!-- GOOGLE MAPS API CODE -->
 
 			<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{google_api_key}}"></script>
@@ -80,7 +80,7 @@
 
 				function getResultsDomainText(page_number, num_results) {
 					var nums = [50*page_number, Math.min(50*page_number + 50, num_results)]
-					var s = '<small>Showing ' + nums[0] + ":" + nums[1] + ' out of ' + num_results + ' restaurants</small>'
+					var s = '<small>Showing ' + nums[0] + " - " + nums[1] + ' out of ' + num_results + ' restaurants</small>'
 					return s;
 				}
 
@@ -227,7 +227,7 @@
 				<div class="row" id="form-row">
 					<div class="panel panel-primary">
 						<div class="panel-heading">
-    						<h1 class="panel-title" align="center"><strong>Restaurant Inspections in New York City</strong></h1>
+    						<h1 class="panel-title" align="center"><strong><img src="{{png_url}}"></img>&nbsp&nbspRestaurant Inspections | New York City&nbsp&nbsp<img src="{{png_url}}"></img></strong></h1>
   						</div>
   						<div class="panel-body">
 							<input id="violation-input" name="violation_code" type="hidden">
