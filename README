@@ -1,0 +1,47 @@
+Data Science Final Project
+Alexander Bok (abok)
+
+github.com/alextbok/restaurant-inspections
+
+Most information about the project is in the writeup. It can be accessed by running the Flask server in app/
+To run the Flask server, simply navigate to the app/ folder and type: python runserver.py
+To access the writeup, open a browser and hit the endpoint localhost:5000/writeup
+Additionally, comments in the code describe the internals. This README is to give a general overview of organization and package structure.
+
+./analysis
+	./analysis/queries
+		Contains the queries run for analysis
+		Queries can be run like so:
+			sqlite3 ../../app/data/inspections.db < query1.sql
+		A summary of the results is described in the writeup (mentioned above)
+	./analysis/results
+		A few text files where I output some of the queries (for the rest of them I simply looked at standard output)
+		These aren't very relevant and some of them may be the output of deprecated queries
+
+./processing.py
+	A small python script I used to run some basic queries on the data (to see if it interested me)
+	It simply slurps up the csv files and has functionality to query on violation code
+	This shouldn't be relevant to grading
+
+./geocoding
+	Contains all relevant code used to geocode the addresses (mainly python scripts)
+	It's pretty messy, because the geocoding process itself was quite messy
+
+./app
+	Root folder of the Flask application
+	./app/data
+		Contains the csv files used to create the database/serve to the client
+		These files are used in ./app/application/db and ./app/application/util
+	./app/application
+		Contains all relevant code run by the server and all static files (e.g. markup and javascript)
+		./app/application/views.py
+			Contains server context and routes
+		./app/application/db
+			Package that creates and interacts with the database
+		./app/application/util
+			Package the handles caching and a few post processing functions used once the data is retrieved
+		./app/application/templates
+			Contains the html files
+		./app/application/static
+			Contains markup, javascript, and pngs
+
