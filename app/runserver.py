@@ -13,4 +13,4 @@ if __name__=="__main__":
 	if options.development:
 		app.run(debug=True)
 	else:
-		aap.run(host='0.0.0.0', port=80)
+		app.run(host='0.0.0.0', port=80)

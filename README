@@ -3,9 +3,12 @@ Alexander Bok (abok)
 
 github.com/alextbok/restaurant-inspections
 
+NOTE: I've deployed the application and it can be found at:
+	http://ec2-52-5-9-230.compute-1.amazonaws.com/
+
 Most information about the project is in the writeup. It can be accessed by running the Flask server in app/
-To run the Flask server, simply navigate to the app/ folder and type: python runserver.py
-To access the writeup, open a browser and hit the endpoint localhost:5000/writeup
+To run the Flask server, simply navigate to the app/ folder and type: "python runserver.py --development"
+To access the writeup, open a browser and hit the endpoint localhost:5000/writeup or http://ec2-52-5-9-230.compute-1.amazonaws.com/writeup
 Additionally, comments in the code describe the internals. This README is to give a general overview of organization and package structure.
 
 ./analysis
